@@ -11,6 +11,7 @@ OPENAI_MODEL = "gpt-3.5-turbo"
 PROMPT = """
     The following dataframe contains information about different processes running on a system: {}. 
     Rank those processes by suspicioussness and give an explanation for the top 10.
+    Focus on the `name` and `command_line` attributes of the processes.
     """
 
 client = OpenAI(
