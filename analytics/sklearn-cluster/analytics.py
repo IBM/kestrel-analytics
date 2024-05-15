@@ -2,6 +2,7 @@
 
 import ast
 import os
+from inspect import Parameter, signature
 
 import gower
 import pandas as pd
@@ -22,6 +23,30 @@ COLS = os.environ.get('columns')
 METHOD = os.environ.get('method', 'kmeans')
 
 
+def fixup_params(algo, params):
+    sig = signature(algo)
+    for name, param in sig.parameters.items():
+        value = params.get(name)
+        if value is not None:
+            # Use has set a value; convert it to the right data type
+            # Infer the type from the default, if there is one
+            if param.default is not None:
+                ptype = type(param.default)
+                if ptype is bool:
+                    value = (value.lower() == 'true')
+                else:
+                    params[name] = ptype(value)
+            else:
+                # Attempt to convert to a number
+                try:
+                    params[name] = int(value)
+                except ValueError:
+                    try:
+                        params[name] = float(value)
+                    except ValueError:
+                        pass  # Leave it as a string
+
+
 def mixed_columns(df, cols):
     dtypes = set(df[cols].dtypes.apply(str).tolist())
     return 'object' in dtypes
@@ -40,7 +65,7 @@ def analytics(df):
     else:
         method = METHOD.lower()
     algo, params = METHODS[method]
-    params = {p: int(v) if v.isdigit() else v for p, v in params.items()}
+    fixup_params(algo, params)
 
     if mixed:
         params['metric'] = 'precomputed'
