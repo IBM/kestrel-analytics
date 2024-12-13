@@ -11,6 +11,9 @@ profiles:
     log4shell-deobfuscation-and-detection:
         module: ~/kestrel-analytics/analytics/log4shell/analytics.py
         func: analytics
+    openai-suspicious-processes:
+        module: ~/kestrel-analytics/analytics/openai-suspicious-processes/analytics.py
+        func: analytics
     pin-IP-on-map:
         module: ~/kestrel-analytics/analytics/piniponmap/analytics.py
         func: analytics
